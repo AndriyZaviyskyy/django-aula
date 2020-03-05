@@ -1,8 +1,67 @@
 {% load customTemplateTags %}
+<style type="text/css">
+  #submenu{
+    display: inline-flex;
+    position: absolute;
+    margin-left: 50px;
+    margin-top: -23px;
+  }
+  #submenu > li > a {
+    color: white;
+  }
+  #submenu > li > a:hover, #submenu > li > a:focus {
+    background-color: #5aa2e0;
+  }
+  .casa{
+    font-size: 13px;
+    color: white;
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+  }
+  .extra{
+    background-color: transparent;
+  }
+  .extra>a:focus, .extra>a:hover, .extra>a{
+    border: none;
+    background-color: #5aa2e0;
+  }
+
+  .navbar-inverse .navbar-nav>li>a{
+    color:white;
+    font-size: 13px;
+    margin-left: 4px;
+    margin-right:4px;
+    margin-top:1px;
+    margin-bottom:1px;
+    width: 100%;
+  }
+  .navbar-inverse .navbar-nav>li>a:hover{
+    background-color: #5aa2e0;
+    border-radius: 5px;
+  }
+  .navbar-inverse .navbar-nav>li>ul>li{
+    width: 95%;
+  }
+  .navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:focus, .navbar-inverse .navbar-nav>.active>a:hover{
+    background-color: #337ab7;
+    border-radius: 5px;
+  }
+  #active{
+    color: white;
+    text-decoration:none;
+  }
+  .navbar-right{
+    margin-right: -8px;
+  }
+  .dropdown-menu>li{
+    width: 95%;
+  }
+</style>
 
 <div id="header"> 
    	
-  <header class="navbar navbar-inverse"> 
+  <header class="navbar navbar-inverse" > 
 
 	    <div class="navbar-header">
 	      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -11,26 +70,57 @@
 	      <span class="icon-bar"></span>
 	      <span class="icon-bar"></span>
 	      </button>
-	      <a href="/" class="navbar-brand">django-aula</a>
-	    </div>         
-      
+	      <a href="/" class="navbar-brand glyphicon glyphicon-home"></a>
+	    </div>
       <div class="collapse navbar-collapse navbar-ex1-collapse">
-        <ul class="nav navbar-nav">
-        {% for item in menu.items %}
-	      <li  class="{{item.active}}" >
-		      <a href="{{item.url}}">{{item.label}} {% if item.alerta %}<span class="glyphicon glyphicon-exclamation-sign" style="color:red"></span>{%endif%} </a> 
-	      </li> 
-		{% endfor %}
-		</ul>
+        <ul class="nav navbar-nav" >
+          <div class="dropdown casa">
+            <button class="btn glyphicon glyphicon-menu-hamburger dropdown-toggle extra" data-toggle="dropdown">
+            </button>
+
+            <ul class="dropdown-menu navbar-inverse navbar-nav">
+              {% for item in menu.items %}
+        	      <li  class="{{item.active}}" >
+        		      <a href="{{item.url}}" id="{{item.active}}">{{item.label}} {% if item.alerta %}<span class="glyphicon glyphicon-exclamation-sign" style="color:red"></span>{%endif%} </a> 
+        	      </li>
+      		    {% endfor %}
+            </ul>
+          </div>
+          {% if menu.subitems %}
+          <div class="col-lg-2" id="submenu">
+
+          <ul class="nav nav-pills hidden-print " id="submenu">
+            {% for item in menu.subitems %}
+                {% if item.subsubitems %}
+                <li role="presentation" class="dropdown {{item.active}} " >
+                  <a href="#" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{item.label}} {% if item.medalla %}<span class="label label-{{item.medalla.tipus}}">{{ item.medalla.valor }}</span>{% endif %} <span class="caret" {% if item.active %} style="border-top:4px solid white;" {% endif %}></span></a>
+                  <ul class="dropdown-menu navbar-inverse navbar-nav" role="menu" >
+                  {% for subsubitem in item.subsubitems %}
+                    <li ><a href="{{subsubitem.url}}" >{{subsubitem.label}} {% if subsubitem.medalla %}<span class="label label-{{item.medalla.tipus}}">{{ subsubitem.medalla.valor }}</span>{% endif %}</a></li>
+                  {% endfor %}
+                  </ul>
+                </li>
+            {% else %}
+            <li role="presentation" class="{{item.active}}">
+              <a href="{{item.url}}" class="btn btn-secondary">{{item.label}} {% if item.medalla %}<span class="label label-{{item.medalla.tipus}}">{{ item.medalla.valor }}</span>{% endif %}</a> 
+            </li> 
+            {% endif %}
+          {% endfor %}      
+          </ul>
+          </div>
+
+          <div class="col-md-10">
+          {% else%}
+          <div class="col-md-12">
+          {% endif %}
+        </ul>
 	      
-		<ul class="nav navbar-nav navbar-right">
+		<ul class="nav navbar-nav navbar-right ">
         {% if user.is_authenticated %}
             <li class="dropdown">    	
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                {{menu.nomusuari}}
-                <b class="caret"></b>
+              <a href="#" class="glyphicon glyphicon-user dropdown-toggle" data-toggle="dropdown">
               </a>
-              <ul class="dropdown-menu">
+              <ul class="dropdown-menu navbar-inverse navbar-nav">
 	              {%if not menu.esalumne %}<li><a href="/usuaris/canviDadesUsuari/">El meu nom i correu.</a></li>{% endif %}
 	              <li><a href="{% url 'usuari__dades__canvi_passwd' %}">Canvi de paraula de pas (password)</a></li>
                 {% if sessioImpersonada %}
@@ -39,13 +129,13 @@
              		  <li><a tabindex="-1" href="/usuaris/resetImpersonacio/">Sortir mode impersonalitzat</a></li>
        		      {% else %}
 		              {% ifusergroup direcció %}
-						<li class="divider"></li>
          		        	<li><a href="/usuaris/impersonacio/">Impersonació / Level4</a></li>
 		              {% endifusergroup %}
-	              {% endif %}   
+	              {% endif %}  
+                  <li><a href="/logout/"><span>Salir</span></a></li> 
               </ul>
             </li>
-            <li><a href="/logout/"><span class="glyphicon glyphicon-log-out"></span></a></li>
+            
           {% else %}
 	        <li><a tabindex="-1" href="/">Login</a></li>	      
           {% endif %}
@@ -59,34 +149,12 @@
 
 
 <div class="row">
-
-  {% if menu.subitems %}
-  <div class="col-md-2">
-
-  <ul class="nav nav-pills nav-stacked hidden-print" id="submenu">
-    {% for item in menu.subitems %}
-        {% if item.subsubitems %}
-        <li role="presentation" class="dropdown {{item.active}}" >
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{item.label}} {% if item.medalla %}<span class="label label-{{item.medalla.tipus}}">{{ item.medalla.valor }}</span>{% endif %} <span class="caret" {% if item.active %} style="border-top:4px solid white;" {% endif %}></span></a>
-          <ul class="dropdown-menu" role="menu">
-          {% for subsubitem in item.subsubitems %}
-            <li><a href="{{subsubitem.url}}" >{{subsubitem.label}} {% if subsubitem.medalla %}<span class="label label-{{item.medalla.tipus}}">{{ subsubitem.medalla.valor }}</span>{% endif %}</a></li>
-          {% endfor %}
-          </ul>
-        </li>
-		{% else %}
-		<li role="presentation" class="{{item.active}}" >
-		  <a href="{{item.url}}">{{item.label}} {% if item.medalla %}<span class="label label-{{item.medalla.tipus}}">{{ item.medalla.valor }}</span>{% endif %}</a> 
-		</li> 
-		{% endif %}
-	{% endfor %}   		
-  </ul>
-  </div>
-
-  <div class="col-md-10">
-  {% else%}
-  <div class="col-md-12">
-  {% endif %}
+<!--
+<script type="text/javascript">
+  var dis=document.getElementById('active');
+  $("#menuOp").html(dis);
+</script>
+-->
 
 
 
