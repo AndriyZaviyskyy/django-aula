@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block extrahead %} {% endblock %}
+
+{% block head %}
+  {{ head }}
+{% endblock %}
+
+ 
+{% block content  %}
+	{% block preform %}{% endblock %}
+	
+	{% if form.non_field_errors %}
+    <div class="row" style="background-color:{% cycle '#f5f5f5' 'white' %}">
+      	  <div class="alert alert-danger">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          {% for error in form.non_field_errors %}
+              {{error}}
+          {% endfor %}
+          </div>
+    </div>
+    {% endif %}
+	
+		{%if head %}<h4>{{head}}</h4>{%endif%}
+  <style type="text/css">
+    h4{
+      margin-left: 16px;
+      margin-top: -5px;
+    }
+    #espai{
+      width: 15px;
+    }
+    .centrar{
+      margin-left: 1px;
+    }
+    .centrarT{
+      margin-left: 16px;
+    }
+  </style>
+  <script type="text/javascript">
+    function toggle(source) {
+      checkboxes = document.getElementsByName('dades');
+
+      for(var i=0, n=checkboxes.length;i<n;i++) {
+        checkboxes[i].checked = source.checked;
+      }
+
+    }
+  </script>
+	<form action="." method="post" target="{%if target %}{{target}}{%else%}_self{%endif%}">{% csrf_token %}
+        
+        <table class="centrarT">
+          
+          <tr>
+
+            <td>
+
+              <select id="grup">
+                {% for item in grups %}
+                  <option value="{{item}}">{{item}}</option>
+                {% endfor %}
+              </select>
+
+            </td>
+
+            <td id="espai"></td>
+
+            <td>
+
+              <select id="orden">
+                <option value="NASC">Nom ASC</option>
+                <option value="NDEC">Nom DEC</option>
+                <option value="GASC">Grup ASC</option>
+                <option value="GDEC">Grup DEC</option>
+              </select>
+
+            </td>
+
+          </tr>
+          <tr>
+            <td>&nbsp</td> 
+            <td id="espai"></td> 
+            <td>&nbsp</td> 
+          </tr>
+
+          <tr>
+            <td><input type="checkbox" name="dades" value="nom">Nom</td>
+            <td id="espai"></td> 
+            <td><input type="checkbox" name="dades" value="cognom">Cognom</td> 
+          </tr>
+
+          <tr>
+            <td><input type="checkbox" name="dades" value="data_neixement">Data de Naixement</td>
+            <td id="espai"></td>
+            <td><input type="checkbox" name="dades" value="correu">Correu</td> 
+          </tr>
+
+          <tr>
+            <td><input type="checkbox" name="dades" value="telefon">Telefon</td> 
+            <td id="espai"></td>
+            <td><input type="checkbox" name="dades" value="adreca">Adreça</td> 
+          </tr>
+
+          <tr>
+            <td><input type="checkbox" name="dades" value="cp">CP</td>
+            <td id="espai"></td> 
+            <td><input type="checkbox" name="dades" value="localitat">Localitat</td> 
+          </tr>
+
+          <tr>
+            <td><input type="checkbox" name="dades" value="municipi">Municipi</td>
+            <td id="espai"></td> 
+            <td><input type="checkbox" name="dades" value="data_alta">Data de alta</td> 
+          </tr>
+
+          <tr>
+            <td><input type="checkbox" name="dades" value="data_baixa">Data de baixa</td>
+            <td id="espai"></td> 
+            <td><input type="checkbox" name="dades" value="tutors">Tutors</td> 
+          </tr>
+
+          <tr>
+            <td><input type="checkbox" name="dades" value="correu_tutor">Correu tutor</td>
+            <td id="espai"></td>
+            <td><input type="checkbox" onClick="toggle(this)" />Tot</td>
+          </tr>
+
+        </table>
+        
+	    <div class="row row-padded centrar">
+	    	<div class="col-sm-12 tria_tag" style="margin-top:15px;margin-bottom:15px;">
+	      		<button type="submit" class="btn btn-primary">Enviar dades</button>
+	      </div>
+	    </div>
+    
+	</form>
+	{% block postform  %}{% endblock %}
+{% endblock %}
+
+
+
